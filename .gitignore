@@ -8,3 +8,6 @@ apps/*/logs
 erl_crash.dump
 Mnesia*
 *~
+rel/rabbitmq-codegen
+rel/rabbitmq-server
+.rebar

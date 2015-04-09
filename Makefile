@@ -7,7 +7,7 @@ NODE				= ipo
 REL					= ipo
 SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
 
-.PHONY: rel offline compile get-deps update-deps test clean deep-clean
+.PHONY: rel offline compile get-deps update-deps test clean deep-clean rabbit
 
 rel: compile
 	@cd rel/in; rebar generate -vf
@@ -15,6 +15,14 @@ rel: compile
 	@cd rel/out_buff; rebar generate -vf 
 	@cd rel/proc; rebar generate -vf
 	@cd rel/proc_buff; rebar generate -vf
+	@cd rel; [ -d rabbitmq-codegen ] || git clone https://github.com/rabbitmq/rabbitmq-codegen.git
+	@cd rel; [ -d rabbitmq-server ] || git clone https://github.com/rabbitmq/rabbitmq-server.git && cd rabbitmq-server; make all
+	@cd rel; cp -r rabbitmq-server proc_buff/proc_buff
+	@cd rel; cp -r rabbitmq-server out_buff/out_buff
+	
+rabbit:
+	git clone https://github.com/rabbitmq/rabbitmq-codegen.git
+	git clone https://github.com/rabbitmq/rabbitmq-server.git && cd rabbitmq-server; make
 
 compile: get-deps update-deps
 	@rebar compile
@@ -31,6 +39,8 @@ clean:
 	@rm -rf rel/out_buff/out_buff
 	@rm -rf rel/proc/proc
 	@rm -rf rel/proc_buff/proc_buff
+	@find apps -name "*.beam" | xargs rm
+	@find apps -name "*.app" | xargs rm
 	@rebar clean
 
 deep-clean: clean
