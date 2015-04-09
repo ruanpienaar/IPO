@@ -1,0 +1,12 @@
+{application, proc,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { proc_app, []}},
+  {env, []}
+ ]}.

@@ -1,0 +1,17 @@
+#!/bin/bash
+rel/in/in/bin/in start
+sleep 1
+rel/proc_buff/proc_buff/bin/proc_buff start
+sleep 1
+rel/proc/proc/bin/proc start
+sleep 1
+rel/out_buff/out_buff/bin/out_buff start
+sleep 1
+rel/out/out/bin/out start
+echo "Input Processing Output cluster started..."
+PID_IN=`rel/in/in/bin/in getpid`
+PID_PROC_BUFF=`rel/proc_buff/proc_buff/bin/proc_buff getpid`
+PID_PROC=`rel/proc/proc/bin/proc getpid`
+PID_OUT_BUFF=`rel/out_buff/out_buff/bin/out_buff getpid`
+PID_OUT=`rel/out/out/bin/out getpid`
+echo "Pids $PID_IN (in) $PID_PROC_BUFF (proc_buff) $PID_PROC (proc) $PID_OUT_BUFF (out_buff) $PID_OUT (out) "

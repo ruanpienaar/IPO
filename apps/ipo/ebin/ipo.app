@@ -1,0 +1,8 @@
+{application,ipo,
+             [{description,[]},
+              {vsn,"1"},
+              {registered,[]},
+              {applications,[kernel,stdlib]},
+              {mod,{ipo_app,[]}},
+              {env,[]},
+              {modules,[ipo_app,ipo_sup]}]}.
