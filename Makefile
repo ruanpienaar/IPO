@@ -11,19 +11,15 @@ SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
 
 rel: compile
 	@cd rel/in; rebar generate -vf
-	@cd rel/out; rebar generate -vf 
-	@cd rel/out_buff; rebar generate -vf 
-	@cd rel/proc; rebar generate -vf
-	@cd rel/proc_buff; rebar generate -vf
-	@cd rel; [ -d rabbitmq-codegen ] || git clone https://github.com/rabbitmq/rabbitmq-codegen.git
-	@cd rel; [ -d rabbitmq-server ] || git clone https://github.com/rabbitmq/rabbitmq-server.git && cd rabbitmq-server; make all
-	@cd rel; cp -r rabbitmq-server proc_buff/proc_buff
-	@cd rel; cp -r rabbitmq-server out_buff/out_buff
+	#@cd rel/out; rebar generate -vf 
+	#@cd rel/out_buff; rebar generate -vf 
+	#@cd rel/proc; rebar generate -vf
+	#@cd rel/proc_buff; rebar generate -vf
+	#@cd rel; [ -d rabbitmq-codegen ] || git clone https://github.com/rabbitmq/rabbitmq-codegen.git
+	#@cd rel; [ -d rabbitmq-server ] || git clone https://github.com/rabbitmq/rabbitmq-server.git && cd rabbitmq-server; make all
+	#@cd rel; cp -r rabbitmq-server proc_buff/proc_buff
+	#@cd rel; cp -r rabbitmq-server out_buff/out_buff
 	
-rabbit:
-	git clone https://github.com/rabbitmq/rabbitmq-codegen.git
-	git clone https://github.com/rabbitmq/rabbitmq-server.git && cd rabbitmq-server; make
-
 compile: get-deps update-deps
 	@rebar compile
 
