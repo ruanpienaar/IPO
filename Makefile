@@ -11,14 +11,10 @@ SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
 
 rel: compile
 	@cd rel/in; rebar generate -vf
-	#@cd rel/out; rebar generate -vf 
-	#@cd rel/out_buff; rebar generate -vf 
-	#@cd rel/proc; rebar generate -vf
-	#@cd rel/proc_buff; rebar generate -vf
-	#@cd rel; [ -d rabbitmq-codegen ] || git clone https://github.com/rabbitmq/rabbitmq-codegen.git
-	#@cd rel; [ -d rabbitmq-server ] || git clone https://github.com/rabbitmq/rabbitmq-server.git && cd rabbitmq-server; make all
-	#@cd rel; cp -r rabbitmq-server proc_buff/proc_buff
-	#@cd rel; cp -r rabbitmq-server out_buff/out_buff
+	@cd rel/out; rebar generate -vf 
+	@cd rel/proc; rebar generate -vf
+	# Proc Buff and Out Buff:
+	@./rabbit_install.sh
 	
 compile: get-deps update-deps
 	@rebar compile
@@ -30,14 +26,13 @@ update-deps:
 	@rebar update-deps
 
 clean:
-	@rm -rf rel/in/in
-	@rm -rf rel/out/out
-	@rm -rf rel/out_buff/out_buff
-	@rm -rf rel/proc/proc
-	@rm -rf rel/proc_buff/proc_buff
-	@find apps -name "*.beam" | xargs rm
-	@find apps -name "*.app" | xargs rm
+	@rm -rf rel/in/in 2> /dev/null
+	@rm -rf rel/out/out 2> /dev/null
+	@rm -rf rel/proc/proc 2> /dev/null
+	@find apps -name "*.beam" | xargs -I beam rm beam 2> /dev/null
+	@find apps -name "*.app" | xargs -I app rm app 2> /dev/null
 	@rebar clean
+	@./rabbit_clean.sh
 
 deep-clean: clean
 	@rebar delete-deps
