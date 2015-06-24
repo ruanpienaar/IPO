@@ -11,3 +11,10 @@ Mnesia*
 rel/rabbitmq-codegen
 rel/rabbitmq-server
 .rebar
+ebin
+*.tar*
+rel/in/in/
+rel/out/out/
+rel/out_buff/
+rel/proc/proc/
+rel/proc_buff/
