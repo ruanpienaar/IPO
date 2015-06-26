@@ -3,5 +3,5 @@
 -export([in/1
     ]).
 
-in(Data) ->
+in(_Data) ->
     _Out = ok.

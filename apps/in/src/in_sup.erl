@@ -6,6 +6,9 @@
 
 -export([init/1]).
 
+-define(CHILD(I, Type),
+    {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
+
 -define(CHILD(I, Args, Type),
     {I, {I, start_link, [Args]}, permanent, 5000, Type, [I]}).
 
@@ -14,11 +17,10 @@ start_link() ->
 
 init([]) ->
     Children = conf_to_childspec(),
-    {ok, { {one_for_one, 5, 10}, Children} }.
+    {ok, { {one_for_one, 5, 10}, Children ++ [?CHILD(in_proc_buff, worker)]} }.
 
 conf_to_childspec() ->
     {ok,IncPro} = application:get_env(in, incoming_protocols),
-
     lists:foldl(fun({protocol,Details},Acc) when is_list(Details) ->
         Mod = type_to_mod(proplists:lookup(type, Details)),
         [?CHILD(Mod, Details, supervisor) | Acc]
