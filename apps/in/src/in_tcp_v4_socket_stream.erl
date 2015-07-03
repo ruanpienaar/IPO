@@ -24,9 +24,10 @@ handle_cast(Msg, State) ->
     lager:info("Handle cast: ~p\n",[Msg]),
     {noreply, State}.
 
-handle_info(Info, #?STATE{ socket = Socket } = State) ->
+handle_info({tcp, Socket, Data}, #?STATE{ socket = Socket } = State) ->
     ok = inet:setopts(Socket, [{active, once}]),
-    io:format("...\nInfo : ~p\n",[Info]),
+    io:format("Data:~p\n",[Data]),
+    ok = in_proc_buff:forward(Data),
     {noreply, State}.
 
 terminate(Reason, _State) ->

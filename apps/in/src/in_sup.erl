@@ -26,6 +26,8 @@ conf_to_childspec() ->
         [?CHILD(Mod, Details, supervisor) | Acc]
     end, [], IncPro).
 
+%% XXX: Use Ranch!!!
+
 type_to_mod({type,tcp_v4_socket}) ->
     in_tcp_v4_socket_sup;
 type_to_mod({type,http}) ->
