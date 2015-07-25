@@ -23,5 +23,8 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    {ok, { {one_for_one, 5, 10}, [?CHILD(proc_worker, worker)]} }.
+    {ok, { {one_for_one, 5, 10}, [
+    	?CHILD(proc_out_buff, worker),
+    	?CHILD(proc_worker, worker)
+    ]} }.
 

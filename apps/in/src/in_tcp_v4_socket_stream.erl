@@ -26,11 +26,12 @@ handle_cast(Msg, State) ->
 
 handle_info({tcp, Socket, Data}, #?STATE{ socket = Socket } = State) ->
     ok = inet:setopts(Socket, [{active, once}]),
-    io:format("Data:~p\n",[Data]),
+    %io:format(".", []),
     ok = in_proc_buff:forward(Data),
     {noreply, State}.
 
 terminate(Reason, _State) ->
+    %% XXX maybe log ets entries to disk.......
     lager:error("Module ~p terminated ...\n",[?MODULE,Reason]),
     ok.
 

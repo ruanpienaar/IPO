@@ -1,0 +1,11 @@
+#!/bin/bash
+rel/in/in/bin/in start
+sleep 1
+rel/proc/proc/bin/proc start
+sleep 1
+rel/out/out/bin/out start
+echo "Input Processing Output local nodes started..."
+PID_IN=`rel/in/in/bin/in getpid`
+PID_PROC=`rel/proc/proc/bin/proc getpid`
+PID_OUT=`rel/out/out/bin/out getpid`
+echo "Pids $PID_IN (in) $PID_PROC (proc) $PID_OUT (out) "

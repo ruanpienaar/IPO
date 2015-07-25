@@ -6,12 +6,11 @@
 
 -export([accept/1]).
 
--define(SERVER, ?MODULE).
 -define(STATE, in_tcp_v4_socket_state).
 -record(?STATE,{}).
 
 start_link(Args) ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [Args], []).
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [Args], []).
 
 init([Args]) ->
     io:format("Args : ~p\n",[Args]),

@@ -17,18 +17,23 @@ start_link() ->
 
 init([]) ->
     Children = conf_to_childspec(),
-    {ok, { {one_for_one, 5, 10}, Children ++ [?CHILD(in_proc_buff, worker)]} }.
+    {ok, { {one_for_one, 5, 10}, 
+        % [?CHILD(in_proc_buff, worker)] ++ 
+        Children
+        } }.
 
 conf_to_childspec() ->
     {ok,IncPro} = application:get_env(in, incoming_protocols),
     lists:foldl(fun({protocol,Details},Acc) when is_list(Details) ->
-        Mod = type_to_mod(proplists:lookup(type, Details)),
+        Mod = proto_type_to_mod(proplists:lookup(type, Details)),
         [?CHILD(Mod, Details, supervisor) | Acc]
     end, [], IncPro).
 
-%% XXX: Use Ranch!!!
+%% XXX: make some port clash checker.......
 
-type_to_mod({type,tcp_v4_socket}) ->
+proto_type_to_mod({type,ranch}) -> 
+    in_ranch_sup;
+proto_type_to_mod({type,tcp_v4_socket}) ->
     in_tcp_v4_socket_sup;
-type_to_mod({type,http}) ->
+proto_type_to_mod({type,http}) ->
     in_http_sup.

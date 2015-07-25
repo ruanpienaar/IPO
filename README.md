@@ -1,6 +1,8 @@
 # IPO
 Input Processing Output
 
+*OTP 18 >= compliant...
+
 based on the [IPO](http://en.wikipedia.org/wiki/IPO_Model) pattern. 
 With the added benefit of having a buffer layer between in, process and output.
 The buffers will be utilizing [amqp](https://www.amqp.org/) through [rabbitmq](http://www.rabbitmq.com).

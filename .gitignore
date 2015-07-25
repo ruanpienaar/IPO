@@ -18,3 +18,5 @@ rel/out/out/
 rel/out_buff/
 rel/proc/proc/
 rel/proc_buff/
+.tags
+.tags_sorted_by_file
