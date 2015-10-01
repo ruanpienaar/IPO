@@ -16,7 +16,7 @@ start_link(Args) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [Args], []).
 
 send(Data) ->
-	gen_server:call(?MODULE, {send, Data}).
+	gen_server:call(?MODULE, {send, Data}, infinity).
 
 init([Args]) ->
 	{tcp_v4_host, Host} = proplists:lookup(tcp_v4_host, Args),

@@ -75,7 +75,7 @@ handle_cast(Msg, State) ->
 
 handle_info({#'basic.deliver'{delivery_tag = DT}, 
              #amqp_msg{ payload = Data }}, #?STATE{amqp_channel = Chan} = State) ->
-    io:format("Forwarding data out..."),
+    io:format("."),
     ok = out:send(Data),
 
     %% Acknoledge

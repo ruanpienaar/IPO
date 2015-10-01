@@ -14,7 +14,7 @@ rel: compile
 	@cd rel/out; rebar generate -vf 
 	@cd rel/proc; rebar generate -vf
 	# Proc Buff and Out Buff:
-	@./rabbit_install.sh
+	#@./rabbit_install.sh
 	
 compile: get-deps update-deps
 	@rebar compile
@@ -32,7 +32,7 @@ clean:
 	@find apps -name "*.beam" | xargs -I beam rm beam 2> /dev/null
 	@find apps -name "*.app" | xargs -I app rm app 2> /dev/null
 	@rebar clean
-	@./rabbit_clean.sh
+	#@./rabbit_clean.sh
 
 deep-clean: clean
 	@rebar delete-deps

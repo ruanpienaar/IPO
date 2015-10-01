@@ -1,0 +1,40 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -smp enable -sname in_sim -mnesia debug verbose
+main([Host, Port]) ->
+	connect_loop_try(Host, Port);
+main(_) ->
+	usage().
+
+connect_loop_try(Host, Port) ->
+	connect_loop_try(Host, Port, 60).
+
+connect_loop_try(_Host, _Port, 0) ->
+	{error,econnrefused};
+connect_loop_try(Host, Port, Count) when is_list(Host), is_list(Port) ->
+	timer:sleep(500),
+	case gen_tcp:connect(Host, list_to_integer(Port), [binary, {packet, raw}]) of 
+		{ok, PortPid} ->
+			send(Host, Port, PortPid);
+		{error, Reason} ->
+			io:format("...Connection failed:~p...\n",[Reason]),
+			connect_loop_try(Host, Port, Count-1)
+	end.
+
+send(Host, Port, PortPid) ->
+	timer:sleep(500),
+	{Mega, Sec, Micro} = erlang:timestamp(),
+	case gen_tcp:send(PortPid, integer_to_binary((Mega*1000000 + Sec)*1000 + round(Micro/1000))) of
+		ok ->
+			io:format("."),
+			send(Host, Port, PortPid);
+		{error,closed} ->
+			io:format("...send got error ~p\n",[closed]),
+			connect_loop_try(Host, Port);
+		{error, Reason} ->
+			io:format("...send got error ~p\n",[Reason]),
+			send(Host, Port, PortPid)
+	end.
+
+usage() ->
+	io:format("./in_sim.esh <CONNECT HOST> <CONNECT PORT>\n").

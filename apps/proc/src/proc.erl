@@ -4,5 +4,5 @@
 ]).
 
 execute(Data) ->
-	io:format("... PROCESS SOME DATA HERE ..."),
+	io:format("X"),
 	_NewData = Data.

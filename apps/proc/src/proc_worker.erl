@@ -75,9 +75,8 @@ handle_cast(Msg, State) ->
 
 handle_info({#'basic.deliver'{delivery_tag = DT}, 
              #amqp_msg{ payload = Data }}, #?STATE{amqp_channel = Chan} = State) ->
-    io:format("Executing Data : ~p\n",[Data]),
+    io:format(".",[]),
     NewData = proc:execute(Data),
-
     ok = proc_out_buff:forward(NewData),
 
     %% Acknoledge

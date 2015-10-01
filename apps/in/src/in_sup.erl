@@ -3,7 +3,6 @@
 -behaviour(supervisor).
 
 -export([start_link/0]).
-
 -export([init/1]).
 
 -define(CHILD(I, Type),
@@ -18,9 +17,10 @@ start_link() ->
 init([]) ->
     Children = conf_to_childspec(),
     {ok, { {one_for_one, 5, 10}, 
-        % [?CHILD(in_proc_buff, worker)] ++ 
-        Children
-        } }.
+            [?CHILD(in_proc_buff, worker)] ++
+            Children
+         } 
+    }.
 
 conf_to_childspec() ->
     {ok,IncPro} = application:get_env(in, incoming_protocols),

@@ -6,6 +6,7 @@
 
 start(_StartType, _StartArgs) ->
 
+	%% Maybe move into module, and make private...?
     in_proc_buff = 
         ets:new(in_proc_buff, [named_table,
 							   duplicate_bag,

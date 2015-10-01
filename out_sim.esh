@@ -1,0 +1,38 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -smp enable -sname out_sim -mnesia debug verbose
+main([Port]) ->
+	listen_loop_try(Port);
+main(_) ->
+	usage().
+
+listen_loop_try(Port) when is_list(Port) ->
+	io:format("...listening...\n"),
+	timer:sleep(500),
+	case gen_tcp:listen(list_to_integer(Port), [binary, {active,false}, {packet, raw}, {reuseaddr, true}]) of 
+		{ok, LSock} ->
+			listen_loop_try(LSock,Port);
+		{error, eaddrinuse} ->
+			io:format("...address in use...\n");
+		{error, Error} ->
+			io:format("...~p...\n",[Error]),
+			listen_loop_try(Port)
+	end.
+
+listen_loop_try(LSock, Port) ->
+	{ok,PortPid} = gen_tcp:accept(LSock),
+	recv_loop(LSock, Port, PortPid).
+
+recv_loop(LSock, Port, PortPid) ->
+	case gen_tcp:recv(PortPid, 128) of 
+		{ok, Data} ->
+			io:format("~p\n",[Data]),
+			recv_loop(LSock, Port, PortPid);
+		{error, Error} ->
+			gen_tcp:close(PortPid),
+			io:format("...recv error ~p...\n", [Error]),
+			listen_loop_try(LSock, Port)
+	end.
+
+usage() ->
+	io:format("./out_sim.esh <LISTEN PORT>").
