@@ -1,6 +1,6 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
-%%! -smp enable -sname out_sim -mnesia debug verbose
+%%! -smp enable -sname out_sim -setcookie out_sim -mnesia debug verbose
 main([Port]) ->
 	listen_loop_try(Port);
 main(_) ->
