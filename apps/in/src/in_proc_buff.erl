@@ -111,6 +111,7 @@ handle_info(connect, State) ->
             }};
         {error, Reason} ->
             io:format("...failed to connect to rabbitmq...~p...\n",[Reason]),
+            timer:sleep(25),
             {stop, Reason, State}
     end;
 handle_info(_Info, State) ->
@@ -163,10 +164,10 @@ drain_buffer(Chan) ->
     true = ets:safe_fixtable(?MODULE, false),
     TblStatus.
 
-retry_connect(Pid) ->
-    io:format("Retry connection at 5000 sec...\n"),
+%retry_connect(Pid) ->
+%    io:format("Retry connection at 5000 sec...\n"),
     %{ok,_} = timer:send_after(5000, ?MODULE, connect, [Pid]).
-    ok.
+%    ok.
 
 check_drained(Pid) ->
     timer:apply_after(250, gen_server, cast, [Pid, check_drained]).

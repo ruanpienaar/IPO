@@ -3,7 +3,9 @@
 -behaviour(gen_server).
 -include_lib("amqp_client/include/amqp_client.hrl").
 
--export([start_link/0]).
+-export([start_link/0,
+         start_link/1
+        ]).
 -export([
 	forward/1
 ]).
@@ -19,14 +21,18 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 start_link() ->
-	gen_server:start_link({local, ?MODULE}, ?MODULE, {}, []).
+	gen_server:start_link(?MODULE, {}, []).
+
+start_link(Args) ->
+    gen_server:start_link(?MODULE, Args, []).
 
 forward(Msg) ->
 	gen_server:call(?MODULE, {forward, Msg}).
 
 %% ---------------------------------------------------------------------------
 
-init({}) ->
+init(Args) ->
+    io:format("~p init\nArgs ~p\n",[?MODULE, Args]),
     {ok,PB} = application:get_env(proc, out_buff),
     {amqp,AMQP} = proplists:lookup(amqp, PB),
     {connection,ConnOpts} = proplists:lookup(connection,AMQP),
@@ -81,7 +87,8 @@ handle_call(_Request, _From, State) ->
 handle_cast(_Msg, State) ->
 	{noreply, State}.
 
-handle_info(_Info, State) ->
+handle_info(Info, State) ->
+    io:format("handle_info ~p\n",[Info]),
 	{noreply, State}.
 
 terminate(_Reason, #?STATE{ amqp_connection = Conn, amqp_channel = Chan} = _State) ->

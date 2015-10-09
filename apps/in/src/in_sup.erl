@@ -16,7 +16,7 @@ start_link() ->
 
 init([]) ->
     Children = conf_to_childspec(),
-    {ok, { {one_for_one, 5, 10}, 
+    {ok, { {one_for_one, 100, 10}, 
             [?CHILD(in_proc_buff, worker)] ++
             Children
          } 
