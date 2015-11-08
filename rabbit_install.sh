@@ -3,6 +3,7 @@
 function startup(){
   echo "More help at https://www.rabbitmq.com/install-generic-unix.html#"
   echo "Rabbit nodes, normally are installed on seperate hosts"
+  echo "set \$RABBITMQ_HOME, for IPO: ipo/rel/proc_buff/rabbitmq_server-3.5.3 OR ipo/rel/out_buff/rabbitmq_server-3.5.3"
   echo "On each rabbit machine: export RABBITMQ_NODENAME=\"proc_buff@<HOSTNAME>\" and export RABBITMQ_NODENAME=\"out_buff@<HOSTNAME>\"."
   echo "Configure rabbit in \$RABBITMQ_HOME/etc/rabbitmq/rabbitmq-env.conf"
   echo "To Start rabbit run (proc_buff/out_buff) rabbitmq_server-3.5.3/sbin/rabbitmq-server -detached"

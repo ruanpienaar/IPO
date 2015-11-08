@@ -1,6 +1,9 @@
 #!/usr/bin/env escript
 %% -*- erlang -*-
 %%! -smp enable -sname out_sim -setcookie out_sim -mnesia debug verbose
+
+%% TODO: Add Host to Listen options....
+
 main([Port]) ->
 	listen_loop_try(Port);
 main(_) ->

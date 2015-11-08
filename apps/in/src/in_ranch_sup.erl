@@ -14,11 +14,6 @@ start_link(Args) ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, Args).
 
 init(Args) ->
-    {listen_opts,Opts} = proplists:lookup(listen_opts,Args),
-    {tcp_v4_port,Port} = proplists:lookup(tcp_v4_port,Args),
-	{ok, _} = ranch:start_listener(in_ranch, 100, ranch_tcp, 
-                                   [{port, Port}] ++ Opts, in_ranch_protocol, []),
-
     {ok, { {one_for_one, 5, 10}, [
-        % ?CHILD(, supervisor)
+        ?CHILD(in_ranch_protocol, Args, worker)
     ]} }.

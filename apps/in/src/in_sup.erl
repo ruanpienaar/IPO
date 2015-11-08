@@ -5,11 +5,7 @@
 -export([start_link/0]).
 -export([init/1]).
 
--define(CHILD(I, Type),
-    {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
-
--define(CHILD(I, Args, Type),
-    {I, {I, start_link, [Args]}, permanent, 5000, Type, [I]}).
+-include_lib("ipo/include/ipo.hrl").
 
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
@@ -17,8 +13,7 @@ start_link() ->
 init([]) ->
     Children = conf_to_childspec(),
     {ok, { {one_for_one, 100, 10}, 
-            [?CHILD(in_proc_buff, worker)] ++
-            Children
+            [?CHILD(in_proc_buff, worker)] ++ Children
          } 
     }.
 
