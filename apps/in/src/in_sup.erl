@@ -24,7 +24,8 @@ conf_to_childspec() ->
         [?CHILD(Mod, Details, supervisor) | Acc]
     end, [], IncPro).
 
-%% XXX: make some port clash checker.......
+%% TODO: make some port clash checker.......
+%% Maybe register all ports being used.
 
 proto_type_to_mod({type,ranch}) -> 
     in_ranch_sup;

@@ -7,8 +7,8 @@
 
 -record(?STATE,{
     ranch_listener_pid,
-	socket,
-	transport,
+    socket,
+    transport,
     ref
 }).
 
@@ -52,12 +52,12 @@ init(Ref, Socket, Transport, _Opts = []) ->
 % 23:41:06.987 [error] CRASH REPORT Process <0.1533.0> with 0 neighbours exited with reason: no function clause matching in_ranch_protocol:handle_info({tcp_closed,#Port<0.4084>}, {in_ranch_protocol_state,#Port<0.4084>,ranch_tcp}) line 32 in gen_server:terminate/7 line 826
 
 handle_call(Request, _From, State) ->
-	io:format("HANDLE call ~p\n", [Request]),
-	{reply, {error, unknown_call}, State}.
+    io:format("HANDLE call ~p\n", [Request]),
+    {reply, {error, unknown_call}, State}.
 
 handle_cast(Msg, State) ->
-	io:format("HANDLE cast ~p\n", [Msg]),
-	{noreply, State}.
+    io:format("HANDLE cast ~p\n", [Msg]),
+    {noreply, State}.
 
 handle_info({tcp_closed, _Socket}, #?STATE{ ref = Ref } = State) ->
     %% Have the supervisor restart this Socket Listener.
@@ -65,14 +65,14 @@ handle_info({tcp_closed, _Socket}, #?STATE{ ref = Ref } = State) ->
     % ok = ranch:stop_listener(Ref),
     {noreply, State};
 handle_info({tcp, Socket, Data}, #?STATE{ transport = Transport, socket = Socket } = State) ->
-	ok = Transport:setopts(Socket, [{active, once}]),
-	io:format(".", []),
-	%% TODO: build a generic forwarder + Queue mech
-	ok = in_proc_buff:forward(Data),
-	{noreply, State}.
+    ok = Transport:setopts(Socket, [{active, once}]),
+    io:format(".", []),
+    %% TODO: build a generic forwarder + Queue mech
+    ok = in_proc_buff:forward(Data),
+    {noreply, State}.
 
 terminate(_Reason, _State) ->
-	ok.
+    ok.
 
 code_change(_OldVsn, State, _Extra) ->
-	{ok, State}.
+    {ok, State}.

@@ -208,36 +208,36 @@ fwd_msg(#?STATE{ amqp_channel = Chan } = State, Msg) ->
                                   amqp_connection = undefined }}
     end.
 
-drain('$end_of_table', State) ->
-    {ok, State};
-drain(Key, State) ->
-    io:format("D",[]),
-    [{Key,Msg}] = ets:lookup(?MODULE, Key),
-    case fwd_msg(State, Msg) of
-        {ok, State2} ->
-            true = ets:delete_object(?MODULE, {Key,Msg}),
-            Next = ets:next(?MODULE, Key),
-            drain(Next, State2);
-        {error, State3} ->
-            {error, State3}
-    end.
+% drain('$end_of_table', State) ->
+%     {ok, State};
+% drain(Key, State) ->
+%     io:format("D",[]),
+%     [{Key,Msg}] = ets:lookup(?MODULE, Key),
+%     case fwd_msg(State, Msg) of
+%         {ok, State2} ->
+%             true = ets:delete_object(?MODULE, {Key,Msg}),
+%             Next = ets:next(?MODULE, Key),
+%             drain(Next, State2);
+%         {error, State3} ->
+%             {error, State3}
+%     end.
 
 drain_buffer(State) ->
-    true = ets:safe_fixtable(?MODULE, true),
-    {ok, State4, TblStatus} = 
-        case ets:first(?MODULE) of 
-            '$end_of_table' ->
-                {ok, State, empty};
-            First ->
-                case drain(First, State) of
-                    {ok, State2} ->
-                        {ok, State2, draining};
-                    {error, State3} ->
-                        {ok, State3, error}
-                end
-        end,
-    true = ets:safe_fixtable(?MODULE, false),
-    {ok, State4, TblStatus}.
+    % true = ets:safe_fixtable(?MODULE, true),
+    % {ok, State4, TblStatus} = 
+    %     case ets:first(?MODULE) of 
+    %         '$end_of_table' ->
+    %             {ok, State, empty};
+    %         First ->
+    %             case drain(First, State) of
+    %                 {ok, State2} ->
+    %                     {ok, State2, draining};
+    %                 {error, State3} ->
+    %                     {ok, State3, error}
+    %             end
+    %     end,
+    % true = ets:safe_fixtable(?MODULE, false),
+    {ok, State, empty}.
 
 retry_connect(Pid) ->
     {ok, _TRef} = timer:send_after(250, ?MODULE, connect).
@@ -246,5 +246,6 @@ check_sink(Pid) ->
     {ok, _TRef} = timer:send_after(5000, ?MODULE, check_sink).
 
 store_msg(Msg) ->
-    Key = erlang:unique_integer([positive, monotonic]),
-    true = ets:insert_new(?MODULE, {Key, Msg}).
+    % Key = erlang:unique_integer([positive, monotonic]),
+    % true = ets:insert_new(?MODULE, {Key, Msg}).
+    ok.
