@@ -18,19 +18,22 @@ init([Args]) ->
     {listen_opts,Opts} = proplists:lookup(listen_opts,Args),
     {ok, LSocket} = gen_tcp:listen(Port,Opts),
     spawn_link(?MODULE, accept, [LSocket]),
-    %% TODO , handle if the accept process died...
     {ok, #?STATE{}}.
 
-handle_call(_Request, _From, State) ->
+handle_call(Request, _From, State) ->
+    io:format("Unhandled Requst ~p ~n", [Request]),
     {reply, {error, unknown_call}, State}.
 
-handle_cast(_Msg, State) ->
+handle_cast(Msg, State) ->
+    io:format("Unhandled Msg ~p ~n", [Msg]),
     {noreply, State}.
 
-handle_info(_Info, State) ->
+handle_info(Info, State) ->
+    io:format("Unhandled Info ~p ~n", [Info]),
     {noreply, State}.
 
-terminate(_Reason, _State) ->
+terminate(Reason, _State) ->
+    io:format("Terminate ~p ~p~n", [?MODULE, Reason]),
     ok.
 
 code_change(_OldVsn, State, _Extra) ->

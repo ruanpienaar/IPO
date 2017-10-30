@@ -1,11 +1,14 @@
 {application, in,
  [
-  {description, ""},
+  {description, "in - Configurable incomming data transmission layer"},
   {vsn, "1"},
-  {registered, []},
+  {registered, [
+    in_sup
+  ]},
   {applications, [
                   kernel,
                   stdlib
+                  % ranch
                  ]},
   {mod, { in_app, []}},
   {env, []}

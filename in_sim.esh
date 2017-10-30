@@ -7,13 +7,13 @@ main(_) ->
 	usage().
 
 connect_loop_try(Host, Port) ->
-	connect_loop_try(Host, Port, _RetryCount = 60, _MsgCount = 50000).
+	connect_loop_try(Host, Port, _RetryCount = 60, _MsgCount = 5).
 
 connect_loop_try(_Host, _Port, 0, _) ->
 	{error,econnrefused};
 connect_loop_try(Host, Port, Count, MsgCount) when is_list(Host), is_list(Port) ->
 	timer:sleep(500),
-	case gen_tcp:connect(Host, list_to_integer(Port), [binary, {packet, raw}]) of 
+	case gen_tcp:connect(Host, list_to_integer(Port), [binary, {packet, 2}]) of
 		{ok, PortPid} ->
 			send(Host, Port, PortPid, MsgCount);
 		{error, Reason} ->
@@ -24,7 +24,7 @@ connect_loop_try(Host, Port, Count, MsgCount) when is_list(Host), is_list(Port) 
 send(_Host, _Port, PortPid, 0) ->
 	ok = gen_tcp:close(PortPid);
 send(Host, Port, PortPid, MsgCount) ->
-	%%timer:sleep(1),
+	timer:sleep(100),
 	{Mega, Sec, Micro} = erlang:timestamp(),
 	case gen_tcp:send(PortPid, list_to_binary(integer_to_list((Mega*1000000 + Sec)*1000 + round(Micro/1000)) ++ "\n") ) of
 		ok ->

@@ -36,8 +36,8 @@ init(Args) ->
     {ok,PB} = application:get_env(proc, out_buff),
     {amqp,AMQP} = proplists:lookup(amqp, PB),
     {connection,ConnOpts} = proplists:lookup(connection,AMQP),
-    ConnParams = 
-        case proplists:lookup(type, ConnOpts) of 
+    ConnParams =
+        case proplists:lookup(type, ConnOpts) of
             {type,network} ->
                 {username,U}  = proplists:lookup(username, ConnOpts),
                 {passwd,Pw} = proplists:lookup(passwd, ConnOpts),
@@ -52,10 +52,10 @@ init(Args) ->
         end,
     {ok, Conn} = amqp_connection:start(ConnParams),
     {ok, Chan} = amqp_connection:open_channel(Conn),
-    DQ = 
+    DQ =
         #'queue.declare'{
             ticket = 0,
-            queue = <<"ipo_out">>,
+            queue = <<"ipo">>,
             passive = false,
             durable = true,
             exclusive = false,
@@ -77,7 +77,7 @@ handle_call({forward, Msg}, _From, #?STATE{ amqp_channel = AC } = State) ->
         % exchange = Exchange,
         routing_key = <<"ipo_out">>
     },
-    AMQPMsg = #amqp_msg{props = P, 
+    AMQPMsg = #amqp_msg{props = P,
                         payload = Msg},
     ok = amqp_channel:cast(AC, Pub, AMQPMsg),
     {reply, ok, State};

@@ -17,17 +17,17 @@ init([Socket]) ->
     {ok, #?STATE{ socket = Socket }}.
 
 handle_call(Request, _From, State) ->
-    lager:info("Handle call: ~p\n",[Request]),
+    io:format("Handle call: ~p\n",[Request]),
     {reply, {error, unknown_call}, State}.
 
 handle_cast(Msg, State) ->
-    lager:info("Handle cast: ~p\n",[Msg]),
+    io:format("Handle cast: ~p\n",[Msg]),
     {noreply, State}.
 
-handle_info({tcp, Socket, Data}, #?STATE{ socket = Socket } = State) ->
+handle_info({tcp, Socket, _Data}, #?STATE{ socket = Socket } = State) ->
     ok = inet:setopts(Socket, [{active, once}]),
-    %io:format(".", []),
-    ok = in_proc_buff:forward(Data),
+    io:format(".", []),
+    %ok = in_proc_buff:forward(Data),
     {noreply, State}.
 
 terminate(Reason, _State) ->

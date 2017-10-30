@@ -32,8 +32,8 @@ init(Args) ->
     {ok,PB} = application:get_env(proc, proc_buff),
     {amqp,AMQP} = proplists:lookup(amqp, PB),
     {connection,ConnOpts} = proplists:lookup(connection,AMQP),
-    ConnParams = 
-        case proplists:lookup(type, ConnOpts) of 
+    ConnParams =
+        case proplists:lookup(type, ConnOpts) of
             {type,network} ->
                 {username,U}  = proplists:lookup(username, ConnOpts),
                 {passwd,Pw} = proplists:lookup(passwd, ConnOpts),
@@ -48,10 +48,10 @@ init(Args) ->
         end,
     {ok, Conn} = amqp_connection:start(ConnParams),
     {ok, Chan} = amqp_connection:open_channel(Conn),
-    DQ = 
+    DQ =
         #'queue.declare'{
             ticket = 0,
-            queue = <<"ipo_in">>,
+            queue = <<"ipo">>,
             passive = false,
             durable = true,
             exclusive = false,
@@ -61,7 +61,7 @@ init(Args) ->
         },
     %% Maybe case>>
     #'queue.declare_ok'{} = amqp_channel:call(Chan, DQ),
-    BC = #'basic.consume'{ queue = <<"ipo_in">> },
+    BC = #'basic.consume'{ queue = <<"ipo">> },
     #'basic.consume_ok'{} = amqp_channel:subscribe(Chan, BC, self()),
     {ok, #?STATE{
                 amqp_connection_opts = ConnOpts,
@@ -77,7 +77,7 @@ handle_cast(Msg, State) ->
     io:format("handle_cast ~p\n",[Msg]),
     {noreply, State}.
 
-handle_info({#'basic.deliver'{delivery_tag = DT}, 
+handle_info({#'basic.deliver'{delivery_tag = DT},
              #amqp_msg{ payload = Data }}, #?STATE{amqp_channel = Chan} = State) ->
     io:format(".",[]),
     NewData = proc:execute(Data),

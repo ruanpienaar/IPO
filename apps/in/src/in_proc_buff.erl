@@ -26,9 +26,9 @@
 start_link() ->
 	gen_server:start_link({local, ?MODULE}, ?MODULE, {}, []).
 
-forward(Msg) -> 
+forward(Msg) ->
     gen_server:call(?MODULE, {forward, Msg}, infinity).
-    
+
 
 %% ---------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ handle_call({forward, Msg}, _From, #?STATE{ connected = false } = State) ->
     true = store_msg(Msg),
     {reply, ok, State};
 handle_call({forward, Msg}, _From, State) ->
-    case fwd_msg(State, Msg) of 
+    case fwd_msg(State, Msg) of
         {ok, State2} ->
             {reply, ok, State2};
         {error, State3} ->
@@ -74,8 +74,8 @@ handle_cast(_Msg, State) ->
 handle_info({'EXIT', Chan, shutdown}, #?STATE{ amqp_channel = Chan } = State) ->
     io:format("[~p] Received {'EXIT', ~p, ~p}", [?MODULE, Chan, shutdown]),
     try_close(State),
-    {stop, channel_shutdown, State#?STATE{ connected = false, 
-                                  amqp_channel = undefined, 
+    {stop, channel_shutdown, State#?STATE{ connected = false,
+                                  amqp_channel = undefined,
                                   amqp_connection = undefined }};
 handle_info({'EXIT', FromPid, Reason}, State) ->
     % ok = amqp_channel:close(Chan),
@@ -95,8 +95,8 @@ handle_info(connect, State) ->
     {ok, PB} = application:get_env(in, proc_buff),
     {amqp, AMQP} = proplists:lookup(amqp, PB),
     {connection, ConnOpts} = proplists:lookup(connection,AMQP),
-    ConnParams = 
-        case proplists:lookup(type, ConnOpts) of 
+    ConnParams =
+        case proplists:lookup(type, ConnOpts) of
             {type,network} ->
                 {username,U}  = proplists:lookup(username, ConnOpts),
                 {passwd,Pw} = proplists:lookup(passwd, ConnOpts),
@@ -114,10 +114,10 @@ handle_info(connect, State) ->
             {ok, Chan} = amqp_connection:open_channel(Conn),
             true = erlang:link(Conn),
             true = erlang:link(Chan),
-            DQ = 
+            DQ =
                 #'queue.declare'{
                     ticket = 0,
-                    queue = <<"ipo_in">>,
+                    queue = <<"ipo">>,
                     passive = false,
                     durable = true,
                     exclusive = false,
@@ -132,7 +132,7 @@ handle_info(connect, State) ->
                         amqp_connection = Conn,
                         amqp_channel = Chan
             }};
-        {error, Reason} ->
+        {error, _Reason} ->
             {ok, TimerRef} = retry_connect(self),
             {noreply, State2#?STATE{
                         connected = false,
@@ -143,11 +143,11 @@ handle_info(connect, State) ->
                       }
             }
     end;
-handle_info(check_sink, #?STATE{ amqp_channel = Chan, connected = false } = State) ->
+handle_info(check_sink, #?STATE{ amqp_channel = _Chan, connected = false } = State) ->
     {ok, DrainTRef} = check_sink(self()),
     {noreply, State#?STATE{ drain_tref = DrainTRef }};
-handle_info(check_sink, #?STATE{ amqp_channel = Chan, connected = true } = State) ->
-    {ok, State4, TblStatus} = drain_buffer(State),
+handle_info(check_sink, #?STATE{ amqp_channel = _Chan, connected = true } = State) ->
+    {ok, State4, _TblStatus} = drain_buffer(State),
     {ok, DrainTRef} = check_sink(self()),
     {noreply, State4#?STATE{ drain_tref = DrainTRef }};
 handle_info(Info, State) ->
@@ -156,7 +156,7 @@ handle_info(Info, State) ->
 
 %% ---------------------------------------------------------------------------
 
-terminate(Reason, #?STATE{ amqp_connection = Conn, amqp_channel = Chan} = State) ->
+terminate(Reason, #?STATE{ amqp_connection = _Conn, amqp_channel = _Chan} = State) ->
     io:format("[~p] terminate ~p\nState: ~p\n", [?MODULE, Reason, State]),
     try_close(State).
 
@@ -165,23 +165,23 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% ---------------------------------------------------------------------------
 
-try_close(#?STATE{ amqp_connection = Conn, amqp_channel = Chan } = State) ->
+try_close(#?STATE{ amqp_connection = Conn, amqp_channel = Chan } = _State) ->
     try
-        case amqp_channel:close(Chan) of 
+        case amqp_channel:close(Chan) of
             Result when Result == ok; Result == closing ->
                 ok;
             Result ->
                 io:format("Couldn't close channel : ~p\n",[Result]),
                 throw(Result)
         end,
-        case amqp_connection:close(Conn) of 
+        case amqp_connection:close(Conn) of
             ok ->
                 ok;
             Error ->
                 io:format("Connection closing : ~p\n", [Error]),
                 throw(Error)
         end
-    catch 
+    catch
         C:E ->
             io:format("Channel/Connection closing failure:~p ~p\n",[C, E]),
             {C, E, erlang:get_stacktrace()}
@@ -191,20 +191,20 @@ fwd_msg(#?STATE{ amqp_channel = Chan } = State, Msg) ->
     P = #'P_basic'{ content_type = <<"text/plain">> },
     Pub = #'basic.publish'{
         % exchange = Exchange,
-        routing_key = <<"ipo_in">>
+        routing_key = <<"ipo">>
     },
-    AMQPMsg = #amqp_msg{props = P, 
+    AMQPMsg = #amqp_msg{props = P,
                         payload = Msg},
     try
         ok = amqp_channel:call(Chan, Pub, AMQPMsg),
         {ok, State}
-    catch 
+    catch
         C:E ->
             io:format("Failed publishing message:~p ~p ~p\n",[C, E, erlang:get_stacktrace()]),
             true = store_msg(Msg),
             %% TODO: maybe check the status of those pids:
-            {error, State#?STATE{ connected = false, 
-                                  amqp_channel = undefined, 
+            {error, State#?STATE{ connected = false,
+                                  amqp_channel = undefined,
                                   amqp_connection = undefined }}
     end.
 
@@ -224,8 +224,8 @@ fwd_msg(#?STATE{ amqp_channel = Chan } = State, Msg) ->
 
 drain_buffer(State) ->
     % true = ets:safe_fixtable(?MODULE, true),
-    % {ok, State4, TblStatus} = 
-    %     case ets:first(?MODULE) of 
+    % {ok, State4, TblStatus} =
+    %     case ets:first(?MODULE) of
     %         '$end_of_table' ->
     %             {ok, State, empty};
     %         First ->
@@ -239,13 +239,13 @@ drain_buffer(State) ->
     % true = ets:safe_fixtable(?MODULE, false),
     {ok, State, empty}.
 
-retry_connect(Pid) ->
+retry_connect(_Pid) ->
     {ok, _TRef} = timer:send_after(250, ?MODULE, connect).
 
-check_sink(Pid) ->
+check_sink(_Pid) ->
     {ok, _TRef} = timer:send_after(5000, ?MODULE, check_sink).
 
-store_msg(Msg) ->
+store_msg(_Msg) ->
     % Key = erlang:unique_integer([positive, monotonic]),
     % true = ets:insert_new(?MODULE, {Key, Msg}).
     ok.
