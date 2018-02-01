@@ -118,7 +118,7 @@ handle_info(connect, State) ->
             DQ =
                 #'queue.declare'{
                     ticket = 0,
-                    queue = <<"ipo_in">>,
+                    queue = <<"ipo">>,
                     passive = false,
                     durable = true,
                     exclusive = false,
@@ -133,7 +133,7 @@ handle_info(connect, State) ->
                         amqp_connection = Conn,
                         amqp_channel = Chan
             }};
-        {error, Reason} ->
+        {error, _Reason} ->
             {ok, TimerRef} = retry_connect(self),
             {noreply, State2#?STATE{
                         connected = false,
@@ -144,11 +144,11 @@ handle_info(connect, State) ->
                       }
             }
     end;
-handle_info(check_sink, #?STATE{ amqp_channel = Chan, connected = false } = State) ->
+handle_info(check_sink, #?STATE{ amqp_channel = _Chan, connected = false } = State) ->
     {ok, DrainTRef} = check_sink(self()),
     {noreply, State#?STATE{ drain_tref = DrainTRef }};
-handle_info(check_sink, #?STATE{ amqp_channel = Chan, connected = true } = State) ->
-    {ok, State4, TblStatus} = drain_buffer(State),
+handle_info(check_sink, #?STATE{ amqp_channel = _Chan, connected = true } = State) ->
+    {ok, State4, _TblStatus} = drain_buffer(State),
     {ok, DrainTRef} = check_sink(self()),
     {noreply, State4#?STATE{ drain_tref = DrainTRef }};
 handle_info(Info, State) ->
@@ -157,7 +157,7 @@ handle_info(Info, State) ->
 
 %% ---------------------------------------------------------------------------
 
-terminate(Reason, #?STATE{ amqp_connection = Conn, amqp_channel = Chan} = State) ->
+terminate(Reason, #?STATE{ amqp_connection = _Conn, amqp_channel = _Chan} = State) ->
     io:format("[~p] terminate ~p\nState: ~p\n", [?MODULE, Reason, State]),
     try_close(State).
 
@@ -166,7 +166,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% ---------------------------------------------------------------------------
 
-try_close(#?STATE{ amqp_connection = Conn, amqp_channel = Chan } = State) ->
+try_close(#?STATE{ amqp_connection = Conn, amqp_channel = Chan } = _State) ->
     try
         case amqp_channel:close(Chan) of
             Result when Result == ok; Result == closing ->
@@ -192,7 +192,7 @@ fwd_msg(#?STATE{ amqp_channel = Chan } = State, Msg) ->
     P = #'P_basic'{ content_type = <<"text/plain">> },
     Pub = #'basic.publish'{
         % exchange = Exchange,
-        routing_key = <<"ipo_in">>
+        routing_key = <<"ipo">>
     },
     AMQPMsg = #amqp_msg{props = P,
                         payload = Msg},
@@ -240,13 +240,13 @@ drain_buffer(State) ->
     % true = ets:safe_fixtable(?MODULE, false),
     {ok, State, empty}.
 
-retry_connect(Pid) ->
+retry_connect(_Pid) ->
     {ok, _TRef} = timer:send_after(250, ?MODULE, connect).
 
-check_sink(Pid) ->
+check_sink(_Pid) ->
     {ok, _TRef} = timer:send_after(5000, ?MODULE, check_sink).
 
-store_msg(Msg) ->
+store_msg(_Msg) ->
     % Key = erlang:unique_integer([positive, monotonic]),
     % true = ets:insert_new(?MODULE, {Key, Msg}).
     ok.
