@@ -15,19 +15,8 @@ if [ -d "rel/proc_buff/rabbitmq_server-3.5.3" && -d "rel/out_buff/rabbitmq_serve
         startup
 else
 	wget -c https://www.rabbitmq.com/releases/rabbitmq-server/v3.5.3/rabbitmq-server-generic-unix-3.5.3.tar.gz
-        
-        tar -xf rabbitmq-server-generic-unix-3.5.3.tar.gz -C rel/proc_buff/
-        tar -xf rabbitmq-server-generic-unix-3.5.3.tar.gz -C rel/out_buff/
-        rm rabbitmq-server-generic-unix-3.5.3.tar.gz
-        
-        cp rabbitmq.proc_buff.config rel/proc_buff/rabbitmq_server-3.5.3/etc/rabbitmq/rabbitmq.config
-        cp rabbitmq.out_buff.config rel/out_buff/rabbitmq_server-3.5.3/etc/rabbitmq/rabbitmq.config
-        
-        cp enabled_plugins rel/proc_buff/rabbitmq_server-3.5.3/etc/rabbitmq/
-        cp enabled_plugins rel/out_buff/rabbitmq_server-3.5.3/etc/rabbitmq/
-	
-	tar -cvf rel/proc_buff.tar rel/proc_buff
-	tar -cvf rel/out_buff.tar rel/out_buff
-        
+        tar -xf rabbitmq-server-generic-unix-3.5.3.tar.gz
+        cp rabbitmq.proc_buff.config rabbitmq_server-3.5.3/etc/rabbitmq/rabbitmq.config
+        cp enabled_plugins rabbitmq_server-3.5.3/etc/rabbitmq/
         startup
 fi

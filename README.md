@@ -1,9 +1,11 @@
 # IPO
 Input Processing Output
 
+*TODO: use simple_one_for_one, for in and out, to be able to dynamically resize.
+
 *OTP 18 >= compliant...
 
-based on the [IPO](http://en.wikipedia.org/wiki/IPO_Model) pattern. 
+based on the [IPO](http://en.wikipedia.org/wiki/IPO_Model) pattern.
 With the added benefit of having a buffer layer between in, process and output.
 The buffers will be utilizing [amqp](https://www.amqp.org/) through [rabbitmq](http://www.rabbitmq.com).
 The In and Out nodes will act as the [transport layers](http://en.wikipedia.org/wiki/Transport_layer).
@@ -53,7 +55,7 @@ This node will be a rabbitmq-server node
 
 > **In-Progress**
 
-This node will be dealing with the processing of the incoming data, whether it be 
+This node will be dealing with the processing of the incoming data, whether it be
 through a callback module, external service, or just pass through.
 
 ## Output Buffer
@@ -76,6 +78,22 @@ responding with the processed data.
 _still have to see how the rabbit server nodes will be installed in a fairly easy way_
 
 1. clone
-2. cd 
+2. cd
 3. make
 4. Run the rebar shell scripts created in each node's release directory.
+
+
+
+
+
+TODO:
+
+rabbitmq is currently the buffer between the in, proc, and out nodes
+
+
+
+
+
+
+
+

@@ -1,0 +1,7 @@
+wget -c https://www.rabbitmq.com/releases/rabbitmq-server/v3.5.3/rabbitmq-server-generic-unix-3.5.3.tar.gz
+tar -xvzf
+cd rabbitmq_server-3.5.3
+export RABBITMQ_HOME=`pwd`
+export RABBITMQ_NODENAME="buff@mbp"
+./sbin/rabbitmq-server -detached
+browse http://localhost:12345/#/

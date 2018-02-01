@@ -1,13 +1,4 @@
-ERL					?= erl
-ERLC				= erlc
-EBIN_DIRS		:= $(wildcard deps/*/ebin)
-APPS				:= $(shell dir apps)
-REL_DIR     = rel
-NODE				= ipo
-REL					= ipo
-SCRIPT_PATH  := $(REL_DIR)/$(NODE)/bin/$(REL)
-
-.PHONY: rel offline compile get-deps update-deps test clean deep-clean rabbit
+.PHONY: rel offline compile get-deps update-deps test clean deep-clean
 
 rel: compile
 	@cd rel/in; rebar generate -vf
