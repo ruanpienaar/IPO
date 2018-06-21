@@ -1,4 +1,4 @@
--module(in_tcp_v4_socket_stream_sup).
+-module(in_tcp4_socket_sup).
 
 -behaviour(supervisor).
 
@@ -11,7 +11,7 @@ start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init([]) ->
-    C = in_tcp_v4_socket_stream,
+    C = in_tcp_v4_socket,
     RestartStrategy = simple_one_for_one,
     MaxRestarts = 1000,
     MaxSecondsBetweenRestarts = 3600,

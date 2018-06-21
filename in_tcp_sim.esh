@@ -39,4 +39,4 @@ send(Host, Port, PortPid, MsgCount) ->
 	end.
 
 usage() ->
-	io:format("./in_sim.esh <CONNECT HOST> <CONNECT PORT>\n").
+	io:format("./in_tcp_sim.esh <CONNECT HOST> <CONNECT PORT>\n").

@@ -1,5 +1,7 @@
 -module(in_sup).
 
+-include_lib("in/include/in.hrl").
+
 -behaviour(supervisor).
 
 -export([start_link/0]).
@@ -23,20 +25,23 @@ conf_to_childspec() ->
     {ok, IncProtos} = application:get_env(in, incoming_protocols),
     lists:foldl(fun({protocol, ProtoArgs}, ChildSpecAcc) when is_list(ProtoArgs) ->
         case proplists:lookup(type, ProtoArgs) of
-            {type, ranch_tcp_ipv4} ->
+            {type, ?RANCH_TCP_V4} ->
                 Ref = proplists:get_value(unique_reference, ProtoArgs),
                 NumAcceptrs = proplists:get_value(num_acceptors, ProtoArgs),
                 TcpIpV4Port = proplists:get_value(tcp_v4_port, ProtoArgs),
                 ListenerSpec = ranch:child_spec(
                     Ref, NumAcceptrs, ranch_tcp,
-                    [{port, TcpIpV4Port}], in_ranch_tcp_ipv4_protocol, ProtoArgs
+                    [{port, TcpIpV4Port}], in_ranch_tcp4_protocol, ProtoArgs
                 ),
                 [ListenerSpec | ChildSpecAcc];
-            {type, tcp_v4_socket} ->
-                [?CHILD(in_tcp_v4_socket_sup, ProtoArgs, supervisor) | ChildSpecAcc];
-            {type, http} ->
+            {type, ?TCP_V4} ->
+                [?CHILD(in_tcp4_sup, ProtoArgs, supervisor) | ChildSpecAcc];
+            {type, ?HTTP} ->
                 %% Http most likely also does not need a supervisor, if cowboy used...
-                [?CHILD(in_http_sup, ProtoArgs, supervisor) | ChildSpecAcc]
+                [?CHILD(in_http_sup, ProtoArgs, supervisor) | ChildSpecAcc];
+            {type, ?UDP_V4} ->
+                %
+                [?CHILD(in_udp4_sup, ProtoArgs, supervisor) | ChildSpecAcc]
         end
     end, [], IncProtos).
 

@@ -1,4 +1,4 @@
--module(in_tcp_v4_socket).
+-module(in_tcp4_socket_server).
 -export([start_link/1]).
 
 -behaviour(gen_server).
@@ -7,18 +7,18 @@
 -export([accept/1]).
 
 -define(STATE, in_tcp_v4_socket_state).
--record(?STATE,{}).
+-record(?STATE,{lsock}).
 
 start_link(Args) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [Args], []).
 
 init([Args]) ->
-    io:format("Args : ~p\n",[Args]),
+    %io:format("Args : ~p\n",[Args]),
     {tcp_v4_port,Port} = proplists:lookup(tcp_v4_port,Args),
     {listen_opts,Opts} = proplists:lookup(listen_opts,Args),
     {ok, LSocket} = gen_tcp:listen(Port,Opts),
-    spawn_link(?MODULE, accept, [LSocket]),
-    {ok, #?STATE{}}.
+    _Pid = spawn_link(?MODULE, accept, [LSocket]),
+    {ok, #?STATE{lsock=LSocket}}.
 
 handle_call(Request, _From, State) ->
     io:format("Unhandled Requst ~p ~n", [Request]),

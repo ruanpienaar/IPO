@@ -39,7 +39,7 @@ init({}) ->
 
 %% ---------------------------------------------------------------------------
 
-handle_call({forward, Msg}, _From, #?STATE{ connected = false } = State) ->
+handle_call({forward, _Msg}, _From, #?STATE{ connected = false } = State) ->
     % true = store_msg(Msg),
     error_logger:error_msg("D", []),
     {reply, ok, State};

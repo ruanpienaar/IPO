@@ -1,0 +1,42 @@
+#!/usr/bin/env escript
+%% -*- erlang -*-
+%%! -smp enable -sname in_sim -setcookie in_sim -mnesia debug verbose
+main([Port]) ->
+    open_loop_try(Port);
+main(_) ->
+    usage().
+
+open_loop_try(Port) ->
+    open_loop_try(Port, _RetryCount = 60, _MsgCount = 5, undefined).
+
+open_loop_try(_Port, 0, _MsgCount, LastError) ->
+    LastError;
+open_loop_try(Port, RetryCount, MsgCount, _LastError) ->
+    timer:sleep(500),
+    case gen_udp:open(55442, []) of
+        {ok, Socket} ->
+            send_loop(Socket, Port, MsgCount);
+        {error, Reason} ->
+            open_loop_try(Port, RetryCount-1, MsgCount, {error, Reason})
+    end.
+
+send_loop(_Socket, __Port, 0) ->
+    ok;
+send_loop(Socket, Port, MsgCount) ->
+    case gen_udp:send(Socket, "localhost", list_to_integer(Port), <<1:40>>) of % <<"lists">>  == 5 long
+        ok ->
+            send_loop(Socket, Port, MsgCount-1);
+        {error, Reason} ->
+            open_loop_try(Port, _RetryCount = 60, MsgCount, {send_error, {error, Reason}})
+    end.
+
+usage() ->
+    io:format("./in_udp_sim.esh <CONNECT HOST> <CONNECT PORT>\n").
+
+% host_to_ip(Host) ->
+%     [A, B, C, D] = string:tokens(Host, "."),
+%     {list_to_integer(A),
+%      list_to_integer(B),
+%      list_to_integer(C),
+%      list_to_integer(D)
+%     }.

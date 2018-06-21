@@ -1,4 +1,4 @@
--module(in_tcp_v4_socket_sup).
+-module(in_tcp4_sup).
 -behaviour(supervisor).
 
 -export([start_link/1]).
@@ -15,6 +15,6 @@ start_link(Args) ->
 
 init(Args) ->
     {ok, { {one_for_one, 5, 10}, [
-        ?CHILD(in_tcp_v4_socket_stream_sup, supervisor),
+        ?CHILD(in_tcp_v4_socket_sup, supervisor),
         ?CHILD(in_tcp_v4_socket, Args, worker)
     ]} }.

@@ -5,3 +5,8 @@ export RABBITMQ_HOME=`pwd`
 export RABBITMQ_NODENAME="buff@mbp"
 ./sbin/rabbitmq-server -detached
 browse http://localhost:12345/#/
+
+ ☐ Use maps for supervisors
+
+
+udp socket count from sys.config required

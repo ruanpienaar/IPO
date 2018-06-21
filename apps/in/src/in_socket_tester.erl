@@ -20,7 +20,8 @@ data(Socks,[]) ->
     data(Socks,Socks);
 data(Socks,[H|T]) ->
     timer:sleep(9),
-    {MegaSecs,Secs,MicroSecs} = erlang:now(),
-    L = integer_to_list( MegaSecs + Secs + MicroSecs ),
-    ok = gen_tcp:send(H, list_to_binary(L)),
+    % {MegaSecs,Secs,MicroSecs} = erlang:now(),
+    % L = integer_to_list( MegaSecs + Secs + MicroSecs ),
+    % ok = gen_tcp:send(H, list_to_binary(L)),
+    ok = gen_tcp:send(H, <<"Stuff">>),
     data(Socks,T).

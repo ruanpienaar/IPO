@@ -1,4 +1,4 @@
--module(in_ranch_tcp_ipv4_protocol).
+-module(in_ranch_tcp4_protocol).
 
 -behaviour(gen_server).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
@@ -71,9 +71,8 @@ handle_info({tcp_closed, Socket}, #{ socket := Socket } = State) ->
 
 terminate(_Reason, #{
         socket := Socket,
-        transport := Transport } = State) ->
-    ok = Transport:close(Socket),
-    ok.
+        transport := Transport } = _State) ->
+    ok = Transport:close(Socket).
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.

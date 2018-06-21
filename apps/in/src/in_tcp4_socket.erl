@@ -1,4 +1,4 @@
--module (in_tcp_v4_socket_stream).
+-module(in_tcp4_socket).
 -export([start_link/1]).
 
 -behaviour(gen_server).
