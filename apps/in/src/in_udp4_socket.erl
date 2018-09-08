@@ -11,16 +11,13 @@ start_link(Args) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [Args], []).
 
 init([Args]) ->
-
     % dbg:tracer(),
     % dbg:p(all, call),
     % dbg:tpl(gen_udp, cx),
-
     {udp_v4_port,Port} = proplists:lookup(udp_v4_port,Args),
     {open_opts,OpenOpts} = proplists:lookup(open_opts,Args),
     {message_length,MsgLen} = proplists:lookup(message_length,Args),
     {ok, Socket} = gen_udp:open(Port, OpenOpts),
-    % ok = gen_udp:controlling_process(Socket, self()),
     self() ! recv,
     {ok, #?STATE{
         socket = Socket,
@@ -38,11 +35,14 @@ handle_cast(Msg, State) ->
 handle_info(recv, #?STATE{ socket = Socket, msg_len = ML } = State) ->
     case gen_udp:recv(Socket, ML) of
         {ok, {Address, Port, Packet}} ->
-            io:format("{ok, {~p, ~p, ~p}}",
-                [Address, Port, Packet]),
-            % ok = gen_server:cast(self(), recv),
+            % io:format("{ok, {~p, ~p, ~p}}",
+            %     [Address, Port, Packet]),
+
+
+            % TODO: change to timeout...
+            %       or tight loop
             self() ! recv,
-            {noreply, State};
+            {noreply, State, };
         {error, Reason} ->
             {stop, {error, Reason}, State}
     end;
